@@ -19,8 +19,10 @@ public class player2 {
                 try{
                     socket.receive(packet); // Receive data from the client
                     String received = new String(packet.getData(), 0, packet.getLength());
+                    String[] receivedData = received.split(":");
                     System.out.println("Received from client: " + received);
                     if(received.startsWith("NEW GAME:")){
+                    int client_port = packet.getPort();
                     //store the IP address and port number of the client
                     client_IP = packet.getAddress();
                 }
