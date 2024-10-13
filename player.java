@@ -1,9 +1,7 @@
 import java.util.Random;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketTimeoutException;
-import java.net.DatagramPacket;
-public class player2 {
+import java.net.*;
+
+public class player {
     private DatagramSocket socket;
     private boolean running;
     private byte[] buf = new byte[256];
@@ -18,11 +16,19 @@ public class player2 {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length); // Create a packet to receive data
                 try{
                     socket.receive(packet); // Receive data from the client
-                    String received = new String(packet.getData(), 0, packet.getLength());
+                    String received = new String(packet.getData(), 0, packet.getLength()); // Convert the data to a string
                     String[] receivedData = received.split(":");
                     System.out.println("Received from client: " + received);
                     if(received.startsWith("NEW GAME:")){
-                    int client_port = packet.getPort();
+                        int client_port = packet.getPort();
+                        client_IP = packet.getAddress();
+                        try{
+                            ServerSocket player1 = new ServerSocket(client_port);
+                            Socket player1_socket = player1.accept(); // Accept the connection from player1
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        
                     //store the IP address and port number of the client
                     client_IP = packet.getAddress();
                 }
@@ -40,5 +46,15 @@ public class player2 {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    //checks if the message is a new game message
+    public int newGameMessage(String message){
+        int port = 0;
+        if(message.startsWith("NEW GAME:")){
+            String[] messageData = message.split(":");
+            port = Integer.parseInt(messageData[1]); // Get the port number from the message
+        }
+        return port;
     }
 }
