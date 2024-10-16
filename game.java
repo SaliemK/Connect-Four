@@ -38,7 +38,58 @@ public class game {
         board[column-1][row] = piece;
         return true;
     }
-    
+    public boolean checkWinHorizontal(String piece){
+        //check horizontal
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 6; j++){
+                if(i <= 4 && board[i][j] == piece && board[i+1][j] == piece && board[i+2][j] == piece && board[i+3][j] == piece){
+                    return true;
+                }
+                else if(i>=4 && board[i][j] == piece && board[i-1][j] == piece && board[i-2][j] == piece && board[i-3][j] == piece){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean checkWinVertical(String piece){
+        //check vertical
+        for(int i = 0; i < 7; i++){
+            for(int j = 0; j < 3; j++){
+                if(j <= 3 && board[i][j] == piece && board[i][j+1] == piece && board[i][j+2] == piece && board[i][j+3] == piece){
+                    return true;
+                }
+                else if(j > 3 && board[i][j] == piece && board[i][j-1] == piece && board[i][j-2] == piece && board[i][j-3] == piece){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean checkWinDiagonal(String piece){
+        //check diagonal
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 3; j++){
+                if(i <= 4 && j <= 3 && board[i][j] == piece && board[i+1][j+1] == piece && board[i+2][j+2] == piece && board[i+3][j+3] == piece){
+                    return true;
+                }
+                else if(i > 4 && j > 3 && board[i][j] == piece && board[i-1][j-1] == piece && board[i-2][j-2] == piece && board[i-3][j-3] == piece){
+                    return true;
+                }
+            }
+        }
+        for(int i = 0; i < 4; i++){
+            for(int j = 3; j < 6; j++){
+                if(i <= 4 && j >= 3 && board[i][j] == piece && board[i+1][j-1] == piece && board[i+2][j-2] == piece && board[i+3][j-3] == piece){
+                    return true;
+                }
+                else if(i >= 4 && j <= 3 && board[i][j] == piece && board[i-1][j+1] == piece && board[i-2][j+2] == piece && board[i-3][j+3] == piece){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     //method to check if a player has won
     public boolean checkWin(String piece){
         //check horizontal

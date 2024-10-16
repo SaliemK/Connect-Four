@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 import java.net.*;
 
 public class player {
@@ -7,7 +8,10 @@ public class player {
     private byte[] buf = new byte[256];
     private int port_number;
     private InetAddress address;
-
+    private ServerSocket player1_socket;
+    private Socket player2_socket1;
+    private Scanner scanner = new Scanner(System.in);
+    //
     public static String start(String[] args){
         String broadcast_address = args[0];
         String broadcast_port = args[1];
@@ -44,16 +48,18 @@ public class player {
                         continue;
                     }
                 } catch (SocketTimeoutException e) {
-                    // Timeout occurred, move to the next port
-                    //System.out.println("Timeout on port " + i + ", moving to next port.");
-    
-                }
-                
+                    playAsPlayer1(); // Play as player 1 if no player is found
+                }   
             }
             socket.close();
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public int getPort(){
+        Random random = new Random();
+        int port = random.nextInt(9000,9101); // Generate a random port number between 9000 and 9100
+        return port;
     }
 
     //checks if the message is a new game message
@@ -75,4 +81,25 @@ public class player {
                 e.printStackTrace();
             }
         }
+    public void playAsPlayer1(){
+        int port = getPort(); // Get a random port number
+        try{
+            DatagramSocket socket = new DatagramSocket(); // Create a new socket
+            String message = "NEW GAME:" + port; // Create a new game message
+            byte[] buf = message.getBytes(); // Convert the message to a byte array
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port_number); // Create a new packet to send the message
+            socket.send(packet); // Send the message to the server
+            // Wait for player 2 to connect to the player 1
+            player1_socket = new ServerSocket(port); // Create a new server socket for the player
+            player2_socket1 = player1_socket.accept(); // Accept the connection from the other player
+            System.out.println("Which column would you like to drop your piece in?(1-7): ");
+            int column = scanner.nextInt(); // Get the column number from the player
+            PrintWriter out = new PrintWriter(player2_socket1.getOutputStream(), true); // Create a new output stream
+            String insertmessage = "INSERT:" + column; // Create a new insert message
+            out.println(insertmessage); // Send the insert message to the other player
+            socket.close(); // Close the socket
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     }
