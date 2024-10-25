@@ -4,34 +4,6 @@ public class game {
     private String[][] board = new String[6][7];
     private int lastMoveColumn;
     private int lastMoveRow;
-
-    public static void main(String[] args){
-        game game = new game();
-        game.printBoard();
-        //Game test cases
-        /** 
-        game.insertPiece(7, "X");
-        game.insertPiece(6, "O");
-        game.insertPiece(5, "X");
-        game.insertPiece(4, "X");
-        game.insertPiece(6, "X");
-        game.insertPiece(5, "X");
-        game.insertPiece(5, "X");
-        game.insertPiece(4, "O");
-        game.insertPiece(4, "X");
-        game.insertPiece(4, "X"); */
-        game.printBoard();
-        System.out.println(game.checkWin("X",game.lastMoveColumn,game.lastMoveRow));
-    }
-    public void playAMovePlayer1(int column, String piece){
-        insertPiece(column, piece);
-        printBoard();
-    }
-    public void playAMovePlayer2(int column, String piece){
-        String result = "";
-        insertPiece(column, piece);
-        printBoard();
-    }
     public game(){
         //initialize the board with empty spaces
         for(int i = 0; i < 6; i++){
@@ -39,6 +11,12 @@ public class game {
                 board[i][j] = " ";
             }
         }   
+    }
+    public int getLastColumn(){
+        return lastMoveColumn;
+    }
+    public int getLastRow(){
+        return lastMoveRow;
     }
     public void printBoard(){
         //print the game board with numbered columns
@@ -88,7 +66,6 @@ public class game {
     }
     public boolean checkWinVertical(String piece, int column, int row){
         boolean win = false;
-        System.out.println("row: " + row);
         //check vertical
         if(row < 3 && this.board[row][column] == piece && board[row+1][column] == piece && board[row+2][column] == piece && board[row+3][column] == piece){
             win = true;
@@ -100,16 +77,32 @@ public class game {
     }
     public boolean checkWinDiagonal(String piece,int column, int row){
         //check diagonal
-        if(row < 3 && column >= 3 && board[row][column] == piece && board[row+1][column-1] == piece && board[row+2][column-2] == piece && board[row+3][column-3] == piece){
+        if(row < 3 && column >= 3 
+        && board[row][column] == piece 
+        && board[row+1][column-1] == piece 
+        && board[row+2][column-2] == piece 
+        && board[row+3][column-3] == piece){
             return true;
         }
-        else if(row >=3 && column >=2 && board[row][column] == piece && board[row-1][column+1] == piece && board[row-2][column+2] == piece && board[row-3][column+3] == piece){
+        else if(row >=3 && column <=2 
+        && board[row][column] == piece 
+        && board[row-1][column+1] == piece 
+        && board[row-2][column+2] == piece 
+        && board[row-3][column+3] == piece){
             return true;
         }
-        else if(row <= 2 && column <=3 && board[row][column] == piece && board[row+1][column+1] == piece && board[row+2][column+2] == piece && board[row+3][column+3] == piece){
+        else if(row <= 2 && column <=3 
+        && board[row][column] == piece 
+        && board[row+1][column+1] == piece 
+        && board[row+2][column+2] == piece 
+        && board[row+3][column+3] == piece){
             return true;
         }
-        else if(row >= 3 && column >= 3 && board[row][column] == piece && board[row-1][column-1] == piece && board[row-2][column-2] == piece && board[row-3][column-3] == piece){
+        else if(row >= 3 && column >= 3 
+        && board[row][column] == piece 
+        && board[row-1][column-1] == piece 
+        && board[row-2][column-2] == piece 
+        && board[row-3][column-3] == piece){
             return true;
         }
         return false;
