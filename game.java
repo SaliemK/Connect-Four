@@ -42,30 +42,25 @@ public class game {
         System.out.println("-------------------------------");
     }
 
-    //method to insert a piece into a column
+    //method to insert a piece into a column, returns true if the piece was inserted successfully
     public boolean insertPiece(int column, String piece){
         boolean valid = dropPiece(column, piece);
-        if (valid == false){
-            System.out.println("Invalid move");
-        }
         return valid;
     }
 
     //method to drop a piece in a column
     public boolean dropPiece(int column, String piece){
+        if(column < 1 || column > 7){
+            System.out.println("Error: Invalid column number"); //check if the column number is valid
+            return false;
+        }
         //find the lowest empty row in the column
         int row = 5;
         while(board[row][column-1] != " " && row > 0){
             row--;
-            System.out.println(row);
         }
-        System.out.println("Entered in: "+row);
         if(row == 0 && board[row][column-1] != " "){
-            System.out.println("Column is full. Please choose another column."); //check if the column is full
-            return false;
-        }
-        else if(column < 1 || column > 7){
-            System.out.println("Invalid column number. Please enter a number between 1 and 7."); //check if the column number is valid
+            System.out.println("Error: Column is full."); //check if the column is full
             return false;
         }
         else{

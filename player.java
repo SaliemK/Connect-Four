@@ -5,6 +5,7 @@
  * ASSIGNMENT : ASSIGNMENT 2
  * PROGRAM : Player file, runs as both Player 1 and Player 2
  */
+
 import java.io.*;
 import java.net.*;
 import java.util.Random;
@@ -37,6 +38,10 @@ public class Player {
     
     // Method to start the game
     public static String start(String[] args) {
+        if(args.length != 2) {
+            System.out.println("Usage: java Player <broadcast_address> <broadcast_port>");
+            System.exit(1);
+        }
         String broadcast_address = args[0];
         String broadcast_port = args[1];
         return broadcast_address + ":" + broadcast_port;  // Return connection details
@@ -129,25 +134,24 @@ public class Player {
             BufferedReader in = new BufferedReader(new InputStreamReader(player2_socket.getInputStream()));  // Input stream from Player 2
             System.out.println("Which column would you like to drop your piece in? (1-7): "); // Ask Player 1 for move
             int column = scanner.nextInt();  // Get the move from Player 1
-            boolean continuePlaying = sendMessage(out, column,"X"); // Send the move to Player 2
-            System.out.println("SENDING:  "+continuePlaying);
-            if(continuePlaying){
+            boolean continuePlaying = false;
+            if(sendMessage(out, column,"X")) // Send the move to Player 2
+            {
                 continuePlaying = receiveMessage(in,"O"); // Receive the move from Player 2
             }
             while(continuePlaying) {
                 System.out.println("Which column would you like to drop your piece in? (1-7): ");
                 column = scanner.nextInt();  // Get the move from Player 1
-                continuePlaying = sendMessage(out, column,"X");
-                System.out.println("SENDING:  "+continuePlaying);
-                if(continuePlaying){
-                    continuePlaying = receiveMessage(in,"O");
-                     // Check if Player 2 has won
-                    if(game.checkWin("O",game.getLastColumn(),game.getLastRow())) {
-                        out.println("YOU WIN");
-                        continuePlaying = false;
-                    }
+                if(sendMessage(out, column,"X")){ // Send the move to Player 2
+                    continuePlaying = receiveMessage(in,"O"); // Receive the move from Player 2
                 }
-                else {
+                else{
+                    continuePlaying = false;
+                }
+                // Check if Player 2 has won
+                if(game.checkWin("O",game.getLastColumn(),game.getLastRow())) {
+                    out.println("YOU WIN");
+                    continuePlaying = false;
                     break;
                 }
             }
@@ -179,24 +183,23 @@ public class Player {
             while(continuePlaying) {
                 System.out.println("Which column would you like to drop your piece in? (1-7): ");
                 int column = scanner.nextInt();  // Get the move from Player 2
-                continuePlaying = sendMessage(out, column,"O");
-                System.out.println("SENDING:  "+continuePlaying);
-                if(continuePlaying) {
+                if(sendMessage(out, column,"O")){
                     continuePlaying = receiveMessage(in,"X");
-                    if(game.checkWin("X",game.getLastColumn(),game.getLastRow())) { // Check if Player 1 has won
-                        out.println("YOU WIN");
-                        continuePlaying = false; // Stop playing if Player 1 has won
-                        break;
-                    }
                 }
-                else if(!continuePlaying) {
+                else{
+                    continuePlaying = false;
+                }
+                // Check if Player 2 has won
+                if(game.checkWin("X",game.getLastColumn(),game.getLastRow())) {
+                    out.println("YOU WIN");
+                    continuePlaying = false;
                     break;
                 }
             }// Close connection when done
             if(!continuePlaying) {
                 player2_socket.close();
             }
-        }catch (ConnectException e) {
+        }catch (SocketException e) {
             System.out.println("Player 1 has disconnected.");
             try{
                 player2_socket.close(); // Close the socket if Player 1 has disconnected
@@ -218,9 +221,11 @@ public class Player {
             out.println(insertMessage);  // Send the move to the other player
             game.printBoard();
         }
-        return valid;
+        else {
+            out.println("ERROR");
+        }
+        return valid;  // Return whether the move is valid or not
     }
-
     // Method to receive a message from other player
     public boolean receiveMessage(BufferedReader in,String piece) {
         boolean continuePlaying = false;
@@ -231,13 +236,19 @@ public class Player {
             if(receivedMessage.startsWith("INSERT:")) {
                 int column = Integer.parseInt(receivedMessage.split(":")[1]);  // Get the move from Player 1
                 continuePlaying = game.insertPiece(column, piece); // Insert the piece into the board
-                game.printBoard();
+                if(continuePlaying) {
+                    game.printBoard();
+                }
             }
             // Check if the message is a "YOU WIN" message
             else if(receivedMessage.startsWith("YOU WIN")) {
                 continuePlaying = false; // Stop playing if Player has won.
             }
-            else{
+            // Check if the message is an "ERROR" message
+            else if(receivedMessage.startsWith("ERROR")) {
+                continuePlaying = false; // Keep playing if invalid move
+            }
+            else {
                 receiveMessage(in,piece); // If invalid message, keep waiting for a valid message
             }
         } catch (Exception e) {
