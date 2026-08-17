@@ -1,7 +1,6 @@
 # Connect 4 game, using UDP for matchmaking and TCP connection for playing
 
-* Name: Saliem Abrahaley Kidane
-* Student ID: C3395781 
+* Name: Saliem Kidane
 * Course: SENG4500
 * README file, containing instructions for compiling and running the program, any assumptions made as well as Generative AI usage.
 
